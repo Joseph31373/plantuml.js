@@ -1,0 +1,123 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam dpi 150
+
+title 仓库设备出入库管理系统 - 核心实体关系图
+
+class Warehouse {
+  +id
+  +code
+  +name
+  +location
+  +capacity
+  +manager_id
+}
+
+class DeviceCategory {
+  +id
+  +code
+  +name
+  +description
+}
+
+class Device {
+  +id
+  +device_id
+  +name
+  +model
+  +status
+  +purchase_date
+  +price
+  +warehouse_id
+  +category_id
+}
+
+class InventoryItem {
+  +id
+  +warehouse_id
+  +device_category_id
+  +quantity
+  +min_threshold
+}
+
+class StockOrder {
+  +id
+  +order_no
+  +order_type
+  +status
+  +warehouse_id
+  +created_by_id
+  +approved_by_id
+}
+
+class StockOrderItem {
+  +id
+  +order_id
+  +device_id
+  +quantity
+}
+
+class DeviceStatusHistory {
+  +id
+  +device_id
+  +from_status
+  +to_status
+  +changed_by_id
+  +changed_at
+}
+
+class OperationLog {
+  +id
+  +user_id
+  +action
+  +detail
+  +created_at
+  +ip_address
+}
+
+class InventoryCheckTask {
+  +id
+  +name
+  +warehouse_id
+  +status
+  +created_by_id
+  +created_at
+  +completed_at
+}
+
+class InventoryCheckItem {
+  +id
+  +task_id
+  +device_id
+  +expected_quantity
+  +actual_quantity
+}
+
+class User {
+  +id
+  +username
+}
+
+Warehouse "1" -- "0..*" Device : 当前所在仓库
+DeviceCategory "1" -- "0..*" Device : 设备类别
+
+Warehouse "1" -- "0..*" InventoryItem : 仓库库存
+DeviceCategory "1" -- "0..*" InventoryItem : 类别库存
+
+Warehouse "1" -- "0..*" StockOrder : 出入库单
+StockOrder "1" -- "1..*" StockOrderItem : 明细
+Device "1" -- "0..*" StockOrderItem : 出入库记录
+
+Device "1" -- "0..*" DeviceStatusHistory : 状态历史
+User "1" -- "0..*" DeviceStatusHistory : 状态变更人
+
+User "1" -- "0..*" OperationLog : 操作人
+
+Warehouse "1" -- "0..*" InventoryCheckTask : 盘点任务
+InventoryCheckTask "1" -- "1..*" InventoryCheckItem : 盘点明细
+Device "1" -- "0..*" InventoryCheckItem : 被盘点设备
+
+@enduml
+
+
